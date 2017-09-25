@@ -1,7 +1,7 @@
 GPU=0
 CUDNN=0
 OPENCV=0
-OPENMP=0
+OPENMP=1
 DEBUG=0
 
 ARCH= -gencode arch=compute_20,code=[sm_20,sm_21] \
@@ -33,7 +33,7 @@ CFLAGS+= -fopenmp
 endif
 
 ifeq ($(DEBUG), 1) 
-OPTS=-O0 -g
+OPTS=-O2 -g
 endif
 
 CFLAGS+=$(OPTS)
