@@ -416,7 +416,6 @@ void validate_detector(char *datacfg, char *cfgfile, char *weightfile, char *out
         }
     }
 
-
     box *boxes = calloc(l.w*l.h*l.n, sizeof(box));
     float **probs = calloc(l.w*l.h*l.n, sizeof(float *));
     for(j = 0; j < l.w*l.h*l.n; ++j) probs[j] = calloc(classes+1, sizeof(float *));
@@ -514,6 +513,9 @@ void validate_detector_recall(char *cfgfile, char *weightfile)
     float **probs = calloc(l.w*l.h*l.n, sizeof(float *));
     for(j = 0; j < l.w*l.h*l.n; ++j) probs[j] = calloc(classes+1, sizeof(float *));
 
+    FILE *fp = fopen("results.txt", "w");
+    fprintf(stderr, "Saving to results.txt\n");
+
     int m = plist->size;
     int i=0;
 
@@ -565,11 +567,14 @@ void validate_detector_recall(char *cfgfile, char *weightfile)
             }
         }
 
-        fprintf(stderr, "%5d %5d %5d\tRPs/Img: %.2f\tIOU: %.2f%%\tRecall:%.2f%%\n", i, correct, total, (float)proposals/(i+1), avg_iou*100/total, 100.*correct/total);
+        fprintf(fp, "%5d %5d %5d\tRPs/Img: %.2f\tIOU: %.2f%%\tRecall:%.2f%%\n", i, correct, total, (float)proposals/(i+1), avg_iou*100/total, 100.*correct/total);
+        if (i%10 == 0) fflush(fp);
         free(id);
         free_image(orig);
         free_image(sized);
     }
+
+    if (fp) fclose(fp);
 }
 
 void test_detector(char *datacfg, char *cfgfile, char *weightfile, char *filename, float thresh, float hier_thresh, char *outfile, int fullscreen)
