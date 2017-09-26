@@ -567,8 +567,17 @@ void validate_detector_recall(char *cfgfile, char *weightfile)
             }
         }
 
-        fprintf(fp, "%5d %5d %5d\tRPs/Img: %.2f\tIOU: %.2f%%\tRecall:%.2f%%\n", i, correct, total, (float)proposals/(i+1), avg_iou*100/total, 100.*correct/total);
-        if (i%10 == 0) fflush(fp);
+
+        // Save outputs to results.txt file and every 10 print to stderr
+        char resultBuf[1024];
+        snprintf(resultBuf, 1024, "%5d %5d %5d\tRPs/Img: %.2f\tIOU: %.2f%%\tRecall:%.2f%%",
+                i, correct, total, (float)proposals/(i+1), avg_iou*100/total, 100.*correct/total);
+        fprintf(fp, "%s\n", resultBuf);
+        if (i%10 == 0) {
+            fprintf(stderr, "%s\n", resultBuf);
+            fflush(fp);
+        }
+
         free(id);
         free_image(orig);
         free_image(sized);
